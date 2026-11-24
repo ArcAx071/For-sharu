@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07030c">
+<meta name="description" content="A little piece of my heart belongs to you, Shrau.">
+<title>Only You, Shrau ❤️</title>
+<style>
+:root{color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{background:#07030c;color:#fff1f7;font-family:Georgia,"Times New Roman",serif}
+#scene{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:2;touch-action:none}
+.backdrop{position:fixed;inset:0;z-index:0;pointer-events:none;background:
+ radial-gradient(ellipse at 50% 42%,rgba(113,12,58,.30),transparent 38%),
+ radial-gradient(ellipse at 15% 80%,rgba(49,24,110,.22),transparent 40%),
+ radial-gradient(ellipse at 85% 15%,rgba(150,25,74,.15),transparent 38%),
+ linear-gradient(180deg,#090410 0%,#100511 55%,#050309 100%)}
+.backdrop:after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 35%,rgba(0,0,0,.52) 100%)}
+.gate{position:fixed;inset:0;z-index:10;display:grid;place-items:center;padding:24px;background:rgba(7,3,12,.68);backdrop-filter:blur(18px);transition:opacity 1s ease,visibility 1s ease}
+.gate.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.panel{width:min(100%,400px);position:relative;text-align:center;padding:38px 26px 30px;border:1px solid rgba(255,177,211,.22);border-radius:30px;background:linear-gradient(145deg,rgba(255,255,255,.095),rgba(255,255,255,.025));box-shadow:0 25px 100px rgba(255,24,111,.13),inset 0 1px rgba(255,255,255,.12);overflow:hidden}
+.panel:before{content:"";position:absolute;inset:-80% -30%;background:linear-gradient(110deg,transparent 42%,rgba(255,255,255,.08) 50%,transparent 58%);transform:translateX(-60%);animation:shine 6s ease-in-out infinite}
+@keyframes shine{0%,55%{transform:translateX(-60%)}85%,100%{transform:translateX(60%)}}
+.lock{font-size:42px;color:#ff9fc4;text-shadow:0 0 28px #ff287f;position:relative}
+.kicker{font:600 10px system-ui,sans-serif;letter-spacing:.34em;text-transform:uppercase;color:#ffb6d1;margin-top:14px;position:relative}
+h1{font-size:clamp(38px,10vw,50px);font-weight:400;line-height:1.05;margin:14px 0;color:#fff5f8;text-shadow:0 0 28px rgba(255,65,135,.38);position:relative}
+.sub{font-size:16px;line-height:1.6;color:#f4cbd9;margin:0 auto 25px;max-width:300px;position:relative}
+form{display:flex;flex-direction:column;gap:12px;position:relative}
+input{width:100%;border:1px solid rgba(255,173,203,.35);border-radius:15px;background:rgba(12,3,10,.72);padding:16px;color:white;text-align:center;font:15px system-ui,sans-serif;letter-spacing:.15em;outline:none}
+input:focus{border-color:#ff8db7;box-shadow:0 0 0 3px rgba(255,80,145,.13)}
+button{border:0;border-radius:15px;padding:16px 18px;background:linear-gradient(100deg,#ff477e,#c92770);color:white;font:700 12px system-ui,sans-serif;letter-spacing:.13em;box-shadow:0 10px 32px rgba(255,40,110,.27);cursor:pointer}
+#error{min-height:18px;margin:13px 0 0;color:#ffabc5;font:12px system-ui,sans-serif;position:relative}
+.content{position:fixed;z-index:3;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;text-align:center;padding:24px 22px max(42px,env(safe-area-inset-bottom));pointer-events:none;opacity:0;transform:translateY(14px);transition:opacity 1.5s ease,transform 1.5s ease}
+.content.visible{opacity:1;transform:translateY(0)}
+.eyebrow{font:600 10px system-ui,sans-serif;letter-spacing:.38em;text-transform:uppercase;color:#ffb7d0;margin-bottom:12px;text-shadow:0 0 15px #ff3984}
+.name{font-weight:400;font-size:clamp(46px,11vw,82px);line-height:.98;margin:0 0 15px;letter-spacing:-.05em;text-shadow:0 0 18px rgba(255,91,155,.55),0 0 48px rgba(255,20,106,.3)}
+.message{font-size:clamp(16px,4.2vw,21px);line-height:1.55;color:#ffe4ed;max-width:440px;margin:0;text-shadow:0 2px 18px #000}
+.signature{margin-top:19px;font:10px system-ui,sans-serif;letter-spacing:.28em;text-transform:uppercase;color:#ffabc9;opacity:.85}
+.hint{position:fixed;z-index:4;top:max(23px,env(safe-area-inset-top));left:0;right:0;text-align:center;font:600 9px system-ui,sans-serif;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,218,232,.78);pointer-events:none;opacity:0;transition:opacity 1s}
+.hint.visible{opacity:1}
+.hint span{display:inline-block;margin:0 7px;color:#ff6eaa;text-shadow:0 0 12px #ff2d80}
+@media(max-height:650px){.panel{padding:25px 22px}.content{padding-bottom:22px}.name{font-size:clamp(38px,8vw,62px)}}
+@media(prefers-reduced-motion:reduce){.panel:before{animation:none}}
+</style>
+</head>
+<body>
+<canvas id="scene" aria-label="A cinematic glowing 3D particle heart"></canvas>
+<div class="backdrop"></div>
+<div id="render-error" style="display:none;position:fixed;z-index:4;top:48%;left:8%;right:8%;text-align:center;color:#ffd5e4;font:13px system-ui,sans-serif">This browser could not start the 3D heart. Please open this page in Chrome with an internet connection.</div>
+
+<section class="gate" id="gate">
+ <div class="panel">
+  <div class="lock">♡</div>
+  <div class="kicker">A private little universe</div>
+  <h1>Just for you</h1>
+  <p class="sub">Some things are meant only for you...<br>Enter the secret word to unlock yours.</p>
+  <form id="unlockForm">
+   <input id="password" type="password" placeholder="The secret word" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Secret password">
+   <button type="submit">OPEN YOUR SURPRISE&nbsp; ✦</button>
+  </form>
+  <p id="error" aria-live="polite"></p>
+ </div>
+</section>
+
+<div class="hint" id="hint"><span>✦</span> touch the heart · let it scatter <span>✦</span></div>
+<main class="content" id="content">
+ <div class="eyebrow">A little something for</div>
+ <h2 class="name">Shrau</h2>
+ <p class="message">A little piece of my heart belongs to you ❤️</p>
+ <div class="signature">Always, with love</div>
+</main>
+
+<script type="module">
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+
+const gate=document.querySelector("#gate"),form=document.querySelector("#unlockForm");
+const pass=document.querySelector("#password"),error=document.querySelector("#error");
+const content=document.querySelector("#content"),hint=document.querySelector("#hint");
+let unlocked=false;
+form.addEventListener("submit",e=>{
+ e.preventDefault();
+ if(pass.value.trim().toLowerCase()==="onlyyou"){
+  unlocked=true;gate.classList.add("hidden");content.classList.add("visible");hint.classList.add("visible");
+  setTimeout(()=>gate.remove(),1100);
+ }else{error.textContent="Almost... try the secret word again ❤️";pass.value="";pass.focus()}
+});
+
+const canvas=document.querySelector("#scene");
+let renderer;
+try { renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,powerPreference:"high-performance"}); }
+catch (err) { document.querySelector("#render-error").style.display="block"; throw err; }
+renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));renderer.setSize(innerWidth,innerHeight);
+renderer.setClearColor(0x000000,0);
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(36,innerWidth/innerHeight,.1,100);
+camera.position.set(0,0,innerWidth<600?21:18.5);
+
+const rand=(a,b)=>a+Math.random()*(b-a);
+const PARTICLES=7200;
+const positions=new Float32Array(PARTICLES*3),home=new Float32Array(PARTICLES*3);
+const velocity=new Float32Array(PARTICLES*3),rgb=new Float32Array(PARTICLES*3);
+const phases=new Float32Array(PARTICLES);
+for(let i=0;i<PARTICLES;i++){
+ // Filled heart volume from the classic 2D heart curve, with a rounded 3D depth.
+ const t=rand(0,Math.PI*2),fill=Math.sqrt(Math.random());
+ const x=16*Math.pow(Math.sin(t),3)*fill;
+ const y=(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t))*fill;
+ const depth=(1-fill*.48)*rand(-3.2,3.2);
+ const k=i*3;
+ home[k]=positions[k]=x*.255+rand(-.025,.025);
+ home[k+1]=positions[k+1]=y*.255+rand(-.025,.025);
+ home[k+2]=positions[k+2]=depth*.34;
+ const c=new THREE.Color().setHSL(rand(.91,.99),rand(.78,.98),rand(.48,.73));
+ rgb[k]=c.r;rgb[k+1]=c.g;rgb[k+2]=c.b;
+ phases[i]=rand(0,Math.PI*2);
+}
+const heartGeo=new THREE.BufferGeometry();
+heartGeo.setAttribute("position",new THREE.BufferAttribute(positions,3));
+heartGeo.setAttribute("color",new THREE.BufferAttribute(rgb,3));
+const heartGroup=new THREE.Group();scene.add(heartGroup);heartGroup.position.y=.85;
+
+function makeCloud(size,opacity,color=null){
+ const mat=new THREE.PointsMaterial({size,transparent:true,opacity,vertexColors:!color,color:color||0xffffff,
+  blending:THREE.AdditiveBlending,depthWrite:false,sizeAttenuation:true});
+ return mat;
+}
+// Three particle layers create a soft neon bloom around the crisp core.
+const glow=new THREE.Points(heartGeo,makeCloud(.14,.10));
+const mid=new THREE.Points(heartGeo,makeCloud(.085,.25));
+const core=new THREE.Points(heartGeo,makeCloud(.038,.98));
+heartGroup.add(glow,mid,core);
+
+// Orbiting fine luminous rings.
+const ringMat=new THREE.MeshBasicMaterial({color:0xff5d9e,transparent:true,opacity:.22,blending:THREE.AdditiveBlending});
+const rings=[];
+for(let i=0;i<3;i++){
+ const ring=new THREE.Mesh(new THREE.TorusGeometry(5.25+i*.42,.008,6,180),ringMat.clone());
+ ring.rotation.x=Math.PI/2.25+i*.22;ring.rotation.y=i*.85;ring.position.y=.8;
+ scene.add(ring);rings.push(ring);
+}
+
+// Background stars and drifting dust.
+const STAR_COUNT=1800,starPos=new Float32Array(STAR_COUNT*3),starSpeed=new Float32Array(STAR_COUNT);
+for(let i=0;i<STAR_COUNT;i++){
+ const k=i*3;starPos[k]=rand(-13,13);starPos[k+1]=rand(-9,9);starPos[k+2]=rand(-9,-1);
+ starSpeed[i]=rand(.12,.55);
+}
+const starGeo=new THREE.BufferGeometry();starGeo.setAttribute("position",new THREE.BufferAttribute(starPos,3));
+const stars=new THREE.Points(starGeo,new THREE.PointsMaterial({color:0xffb7d1,size:.022,transparent:true,opacity:.65,blending:THREE.AdditiveBlending,depthWrite:false}));
+scene.add(stars);
+
+// A few glowing mini-heart sprites orbit in the background.
+const sprites=[];
+function heartTexture(){
+ const c=document.createElement("canvas");c.width=128;c.height=128;
+ const ctx=c.getContext("2d");ctx.translate(64,66);ctx.scale(3.1,3.1);
+ ctx.beginPath();ctx.moveTo(0,17);ctx.bezierCurveTo(-38,-8,-23,-32,0,-14);ctx.bezierCurveTo(23,-32,38,-8,0,17);
+ const grad=ctx.createRadialGradient(-5,-8,1,0,0,32);grad.addColorStop(0,"rgba(255,220,237,1)");grad.addColorStop(.4,"rgba(255,86,153,.9)");grad.addColorStop(1,"rgba(255,35,112,0)");
+ ctx.fillStyle=grad;ctx.shadowColor="#ff438d";ctx.shadowBlur=18;ctx.fill();
+ return new THREE.CanvasTexture(c);
+}
+const spriteMap=heartTexture();
+for(let i=0;i<11;i++){
+ const sprite=new THREE.Sprite(new THREE.SpriteMaterial({map:spriteMap,transparent:true,opacity:rand(.25,.62),depthWrite:false,blending:THREE.AdditiveBlending}));
+ const a=i/11*Math.PI*2,r=rand(4.6,7.2);
+ sprite.position.set(Math.cos(a)*r,rand(-2.5,4.5),rand(-2.5,2));
+ sprite.scale.setScalar(rand(.22,.5));scene.add(sprite);sprites.push({sprite,a,r,speed:rand(.08,.18),phase:rand(0,6)});
+}
+
+let burst=false,burstCount=0;
+function triggerBurst(){
+ if(!unlocked||burst)return;
+ burst=true;burstCount++;
+ for(let i=0;i<PARTICLES;i++){
+  const k=i*3;let dx=positions[k],dy=positions[k+1],dz=positions[k+2];
+  let len=Math.hypot(dx,dy,dz)||1;const impulse=rand(8,15);
+  velocity[k]+=(dx/len)*impulse+rand(-1.5,1.5);
+  velocity[k+1]+=(dy/len)*impulse+rand(-1.5,1.5);
+  velocity[k+2]+=(dz/len)*impulse+rand(-1.5,1.5);
+ }
+}
+function releaseBurst(){if(burst)burst=false}
+window.addEventListener("pointerdown",e=>{if(unlocked&&!e.target.closest("input,button,form"))triggerBurst()},{passive:true});
+window.addEventListener("pointerup",releaseBurst,{passive:true});
+window.addEventListener("pointercancel",releaseBurst,{passive:true});
+window.addEventListener("blur",releaseBurst);
+
+const clock=new THREE.Clock();
+function animate(){
+ requestAnimationFrame(animate);
+ const dt=Math.min(clock.getDelta(),.033),t=clock.elapsedTime;
+ heartGroup.rotation.y=t*.24;
+ heartGroup.rotation.x=Math.sin(t*.33)*.09;
+ heartGroup.rotation.z=Math.sin(t*.19)*.025;
+ const beat=1+.035*Math.pow(Math.max(0,Math.sin(t*2.25)),12);
+ if(!burst)heartGroup.scale.setScalar(beat);
+ rings.forEach((r,i)=>{r.rotation.z=t*(i%2?-.08:.065);r.rotation.x=Math.PI/2.25+Math.sin(t*.22+i)*.12});
+ sprites.forEach(o=>{o.a+=o.speed*dt;o.sprite.position.x=Math.cos(o.a)*o.r;o.sprite.position.y=.8+Math.sin(o.a*1.3+o.phase)*2.4;o.sprite.material.rotation=Math.sin(t*.5+o.phase)*.5});
+ const starArray=starGeo.attributes.position.array;
+ for(let i=0;i<STAR_COUNT;i++){
+  const k=i*3;starArray[k+1]+=starSpeed[i]*dt*.12;
+  if(starArray[k+1]>9)starArray[k+1]=-9;
+ }
+ starGeo.attributes.position.needsUpdate=true;
+ const spring=burst?.08:18;
+ const damping=Math.pow(burst?.992:.78,dt*60);
+ for(let i=0;i<PARTICLES;i++){
+  const k=i*3;let vx=velocity[k],vy=velocity[k+1],vz=velocity[k+2];
+  vx+=(home[k]-positions[k])*spring*dt;
+  vy+=(home[k+1]-positions[k+1])*spring*dt;
+  vz+=(home[k+2]-positions[k+2])*spring*dt;
+  if(burst){vx+=Math.sin(t*1.8+phases[i])*.65*dt;vy+=Math.cos(t*1.6+phases[i])*.65*dt}
+  vx*=damping;vy*=damping;vz*=damping;
+  positions[k]+=vx*dt;positions[k+1]+=vy*dt;positions[k+2]+=vz*dt;
+  velocity[k]=vx;velocity[k+1]=vy;velocity[k+2]=vz;
+ }
+ heartGeo.attributes.position.needsUpdate=true;
+ renderer.render(scene,camera);
+}
+animate();
+
+function resize(){
+ camera.aspect=innerWidth/innerHeight;camera.position.z=innerWidth<600?21:18.5;
+ camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);
+ renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
+}
+addEventListener("resize",resize,{passive:true});
+</script>
+</body>
+</html>
